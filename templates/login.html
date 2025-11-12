@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 py-12">
+  <div class="w-full max-w-md p-8 space-y-6 bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl border border-white/30">
+    <!-- Branding -->
+    <div class="text-center">
+      <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Research Navigator</h1>
+      <p class="text-sm text-gray-500 mt-1">Semantic Analyzer — Sign in to continue</p>
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="space-y-2">
+          {% for category, message in messages %}
+            <div role="alert" class="p-3 text-sm rounded {{ 'bg-red-50 text-red-700 border border-red-100' if category=='error' else 'bg-green-50 text-green-800 border border-green-100' }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="grid gap-4">
+      <!-- Social login -->
+      <div>
+        <form method="POST" action="/oauth/google" class="w-full">
+          <button type="submit" class="w-full flex items-center justify-center gap-3 px-4 py-2 rounded-lg border border-gray-200 hover:shadow-md transition bg-white">
+            <!-- Simple Google-like icon -->
+            <svg class="w-5 h-5" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <path d="M44 20H24v8h11.6C34.6 31.9 30 36 24 36 15.7 36 9 29.3 9 21S15.7 6 24 6c4.1 0 7.8 1.6 10.6 4.2l6-6C36.4 2 30.5 0 24 0 10.7 0 0 10.7 0 24s10.7 24 24 24c13.3 0 24-10.7 24-24 0-1.6-.1-3.2-.2-4.8z" fill="#4285F4"/>
+            </svg>
+            <span class="text-sm font-medium text-gray-700">Sign in with Google</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Divider -->
+      <div class="flex items-center gap-3">
+        <div class="flex-1 h-px bg-gray-200"></div>
+        <div class="text-xs text-gray-400">or</div>
+        <div class="flex-1 h-px bg-gray-200"></div>
+      </div>
+
+      <!-- Login form -->
+      <form method="POST" action="/login" class="space-y-4" autocomplete="on" novalidate>
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input id="email" name="email" type="email" required aria-required="true"
+            placeholder="you@example.com"
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <div class="relative">
+            <input id="password" name="password" type="password" required aria-required="true"
+              placeholder="Your password"
+              class="w-full px-4 py-2 border rounded-lg pr-24 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400" />
+            <button type="button" id="togglePwd" class="absolute right-2 top-2.5 text-sm px-3 py-1 rounded-md bg-gray-100 border border-gray-200 hover:bg-gray-200 transition">Show</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-sm">
+          <a href="/forgot-password" class="text-indigo-600 hover:underline">Forgot password?</a>
+          <a href="/signup" class="text-gray-500 hover:underline">Create account</a>
+        </div>
+
+        <button type="submit" class="w-full py-2 px-4 rounded-lg text-white font-semibold bg-gradient-to-r from-indigo-600 to-emerald-500 shadow-md hover:from-indigo-700 hover:to-emerald-600 transition">
+          Sign in
+        </button>
+      </form>
+
+      <!-- Small note -->
+      <p class="text-center text-xs text-gray-400">
+        By signing in you agree to our <a href="/terms" class="underline">Terms</a> and <a href="/privacy" class="underline">Privacy Policy</a>.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Script: password toggle (reused from signup) -->
+<script>
+(function(){
+  const passwordInput = document.getElementById('password');
+  const toggleBtn = document.getElementById('togglePwd');
+
+  toggleBtn && toggleBtn.addEventListener('click', function(){
+    if (!passwordInput) return;
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleBtn.textContent = 'Hide';
+    } else {
+      passwordInput.type = 'password';
+      toggleBtn.textContent = 'Show';
+    }
+    passwordInput.focus();
+  });
+})();
+</script>
+
+{% endblock %}

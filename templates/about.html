@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block title %}About — Research Navigator{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-12">
+
+  <!-- Hero -->
+  <div class="bg-white p-8 rounded-2xl shadow-md mb-8">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div>
+        <h1 class="text-3xl font-extrabold text-gray-900">About Research Navigator</h1>
+        <p class="mt-2 text-gray-600 max-w-2xl">
+          Research Navigator helps researchers, students and labs extract meaningful insights from PDFs and DOCX files — automatic text extraction, entity detection, keyword generation and quick previews so you can focus on research, not file wrangling.
+        </p>
+
+        <div class="mt-4 flex flex-wrap gap-3">
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded bg-emerald-100 text-emerald-800 text-sm">Semantic extraction</span>
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded bg-indigo-100 text-indigo-800 text-sm">Auto summarization</span>
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded bg-amber-100 text-amber-800 text-sm">Entity tagging</span>
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded bg-sky-100 text-sky-800 text-sm">JWT-protected</span>
+        </div>
+      </div>
+
+      <div class="w-full md:w-96">
+        <div class="bg-gradient-to-br from-indigo-50 to-emerald-50 rounded-lg p-4">
+          <h3 class="text-sm text-gray-600">Quick numbers (sample)</h3>
+          <div class="mt-3 flex items-center gap-4">
+            <div>
+              <div class="text-2xl font-bold text-gray-900">1.2K</div>
+              <div class="text-xs text-gray-500">Documents processed</div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-gray-900">8.4K</div>
+              <div class="text-xs text-gray-500">Entities extracted</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workflow Diagram -->
+  <section class="mb-10">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">How it works — workflow</h2>
+
+    <div class="bg-white p-6 rounded-2xl shadow">
+      <p class="text-sm text-gray-500 mb-6">High-level flow: Upload → Ingest → Analyze → Explore → Export</p>
+
+      <!-- Responsive SVG workflow -->
+      <div class="overflow-x-auto">
+        <svg viewBox="0 0 1200 220" class="w-full h-56" aria-hidden="true" role="img">
+          <defs>
+            <linearGradient id="gA" x1="0" x2="1">
+              <stop offset="0" stop-color="#6366F1"/>
+              <stop offset="1" stop-color="#10B981"/>
+            </linearGradient>
+          </defs>
+
+          <!-- nodes -->
+          <g transform="translate(40,20)">
+            <!-- Upload -->
+            <g class="node" transform="translate(0,40)">
+              <rect rx="14" ry="14" width="180" height="80" fill="#EEF2FF" stroke="#C7D2FE"/>
+              <text x="90" y="36" font-size="16" font-weight="600" text-anchor="middle" fill="#3730A3">Upload</text>
+              <text x="90" y="56" font-size="12" text-anchor="middle" fill="#475569">PDF / DOCX</text>
+            </g>
+
+            <!-- arrow 1 -->
+            <g transform="translate(200,80)">
+              <path d="M0 0 L80 0" stroke="#9CA3AF" stroke-width="2" marker-end="url(#arrow)"/>
+            </g>
+
+            <!-- Ingest -->
+            <g transform="translate(320,40)">
+              <rect rx="14" ry="14" width="180" height="80" fill="#ECFCCB" stroke="#BBF7D0"/>
+              <text x="90" y="36" font-size="16" font-weight="600" text-anchor="middle" fill="#166534">Ingest</text>
+              <text x="90" y="56" font-size="12" text-anchor="middle" fill="#475569">Text extraction & cleaning</text>
+            </g>
+
+            <!-- arrow 2 -->
+            <g transform="translate(520,80)">
+              <path d="M0 0 L80 0" stroke="#9CA3AF" stroke-width="2" marker-end="url(#arrow)"/>
+            </g>
+
+            <!-- Analyze -->
+            <g transform="translate(640,40)">
+              <rect rx="14" ry="14" width="180" height="80" fill="#FEF3C7" stroke="#FDE68A"/>
+              <text x="90" y="36" font-size="16" font-weight="600" text-anchor="middle" fill="#92400E">Analyze</text>
+              <text x="90" y="56" font-size="12" text-anchor="middle" fill="#475569">NER, keyword & summary</text>
+            </g>
+
+            <!-- arrow 3 -->
+            <g transform="translate(840,80)">
+              <path d="M0 0 L80 0" stroke="#9CA3AF" stroke-width="2" marker-end="url(#arrow)"/>
+            </g>
+
+            <!-- Explore -->
+            <g transform="translate(960,40)">
+              <rect rx="14" ry="14" width="180" height="80" fill="#E0F2FE" stroke="#BAE6FD"/>
+              <text x="90" y="36" font-size="16" font-weight="600" text-anchor="middle" fill="#0369A1">Explore</text>
+              <text x="90" y="56" font-size="12" text-anchor="middle" fill="#475569">Preview & download</text>
+            </g>
+          </g>
+
+          <!-- arrow marker -->
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto" fill="#9CA3AF">
+              <path d="M 0 0 L 10 5 L 0 10 z" />
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Random Graph (sample metrics) -->
+  <section class="mb-10">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Sample metrics</h2>
+    <div class="bg-white p-6 rounded-2xl shadow">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+        <div class="md:col-span-2">
+          <canvas id="randomChart" width="600" height="300" aria-label="Sample chart showing documents ingested per week" role="img"></canvas>
+        </div>
+
+        <div class="p-4 border rounded">
+          <h3 class="text-sm font-medium text-gray-700">Metric legend</h3>
+          <ul class="mt-3 space-y-2 text-sm text-gray-600">
+            <li>• Documents ingested (weekly)</li>
+            <li>• Entities extracted (sample)</li>
+            <li>• Average processing time</li>
+          </ul>
+          <div class="mt-4">
+            <a href="/dashboard" class="inline-block px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">Go to dashboard</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How we help + Tech stack -->
+  <section class="mb-10">
+    <div class="bg-white p-6 rounded-2xl shadow grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h3 class="text-lg font-semibold mb-3">How Research Navigator helps</h3>
+        <ul class="list-disc list-inside text-gray-600 space-y-2">
+          <li>Save time: automatic extraction & preview generation so you don't read whole PDFs first.</li>
+          <li>Structured insights: named entities and keywords grouped for quick review.</li>
+          <li>Secure access: JWT-protected routes and per-user storage.</li>
+          <li>Export & download: easy static downloads and potential viewer pages for documents.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold mb-3">Tech stack (overview)</h3>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-3 py-1 rounded bg-gray-100 text-sm">Flask</span>
+          <span class="px-3 py-1 rounded bg-gray-100 text-sm">MongoDB</span>
+          <span class="px-3 py-1 rounded bg-gray-100 text-sm">PyMuPDF</span>
+          <span class="px-3 py-1 rounded bg-gray-100 text-sm">spaCy</span>
+          <span class="px-3 py-1 rounded bg-gray-100 text-sm">NLTK</span>
+          <span class="px-3 py-1 rounded bg-gray-100 text-sm">Tailwind</span>
+          <span class="px-3 py-1 rounded bg-gray-100 text-sm">Chart.js</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="text-center">
+    <div class="bg-white p-6 rounded-2xl shadow inline-block">
+      <h3 class="text-lg font-semibold mb-2">Ready to try?</h3>
+      <p class="text-sm text-gray-600 mb-4">Upload a document and see instant semantic insights on your dashboard.</p>
+      <a href="/upload" class="px-6 py-3 rounded bg-gradient-to-r from-indigo-600 to-emerald-500 text-white font-semibold">Upload now</a>
+    </div>
+  </section>
+
+</div>
+
+<!-- Chart.js CDN + small script to generate random graph -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // generate random sample data
+  (function(){
+    const ctx = document.getElementById('randomChart').getContext('2d');
+    const weeks = Array.from({length: 12}, (_,i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (11-i)*7);
+      return d.toLocaleDateString('en-GB', {month:'short', day:'numeric'});
+    });
+
+    const docs = weeks.map(() => Math.floor(20 + Math.random()*80)); // 20..100
+    const entities = weeks.map(() => Math.floor(80 + Math.random()*300)); // 80..380
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: weeks,
+        datasets: [
+          {
+            label: 'Documents ingested (weekly)',
+            data: docs,
+            fill: true,
+            tension: 0.3,
+            borderColor: 'rgba(79,70,229,0.9)',
+            backgroundColor: 'rgba(79,70,229,0.12)',
+            pointRadius: 3,
+            pointBackgroundColor: 'rgba(79,70,229,0.9)'
+          },
+          {
+            label: 'Entities extracted (sample)',
+            data: entities,
+            fill: false,
+            tension: 0.3,
+            borderColor: 'rgba(16,185,129,0.9)',
+            borderDash: [6,4],
+            pointRadius: 3,
+            pointBackgroundColor: 'rgba(16,185,129,0.9)'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        scales: {
+          x: { display: true, grid: { display: false } },
+          y: { display: true, beginAtZero: true }
+        }
+      }
+    });
+  })();
+</script>
+{% endblock %}

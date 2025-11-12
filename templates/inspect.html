@@ -1,0 +1,592 @@
+{% extends "base.html" %}
+{% block title %}Inspect — {{ title or "Document" }}{% endblock %}
+{% block content %}
+
+<style>
+  /* Added premium color palette and enhanced card styling */
+  :root {
+    --primary: #0f172a;
+    --primary-light: #1e293b;
+    --accent: #4f46e5;
+    --accent-light: #eef2ff;
+    --accent-dark: #3730a3;
+    --cyan: #06b6d4;
+    --cyan-light: #cffafe;
+    --emerald: #10b981;
+    --emerald-light: #d1fae5;
+    --rose: #f43f5e;
+    --rose-light: #ffe4e6;
+    --slate-50: #f8fafc;
+    --slate-100: #e2e8f0;
+    --slate-200: #cbd5e1;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --slate-600: #475569;
+    --slate-700: #334155;
+    --slate-900: #0f172a;
+    --card-radius: 14px;
+    --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+  }
+
+  /* Enhanced background with gradient mesh effect */
+  body {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e0f2fe 100%);
+    min-height: 100vh;
+  }
+
+  .card-premium {
+    background: white;
+    border-radius: var(--card-radius);
+    border: 1px solid var(--slate-100);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--cyan) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .card-premium:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--slate-200);
+    transform: translateY(-2px);
+  }
+
+  .card-premium:hover::before {
+    opacity: 1;
+  }
+
+  .card-accent {
+    border-left: 4px solid var(--accent);
+  }
+
+  .card-cyan {
+    border-left: 4px solid var(--cyan);
+  }
+
+  .card-emerald {
+    border-left: 4px solid var(--emerald);
+  }
+
+  /* Dynamic text flow without fixed constraints */
+  .card-content {
+    flex: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.7;
+  }
+
+  .tag-pill {
+    display: inline-block;
+    padding: 0.625rem 1rem;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--accent-light) 0%, #dbeafe 100%);
+    color: var(--accent-dark);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1.5px solid rgba(79, 70, 229, 0.25);
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(79, 70, 229, 0.1);
+  }
+
+  .tag-pill:hover {
+    background: linear-gradient(135deg, var(--accent-light) 0%, #bfdbfe 100%);
+    border-color: rgba(79, 70, 229, 0.4);
+    transform: scale(1.08);
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.15);
+  }
+
+  .entity-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--emerald) 0%, #059669 100%);
+    color: white;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    transition: all 0.2s ease;
+  }
+
+  .entity-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.25);
+  }
+
+  .table-premium {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  .table-premium thead {
+    background: linear-gradient(180deg, var(--slate-50) 0%, var(--slate-100) 100%);
+    border-bottom: 2px solid var(--slate-200);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .table-premium th {
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--slate-700);
+  }
+
+  .table-premium tbody tr {
+    border-bottom: 1px solid var(--slate-100);
+    transition: background-color 0.2s ease;
+  }
+
+  .table-premium tbody tr:hover {
+    background-color: var(--slate-50);
+  }
+
+  .table-premium td {
+    padding: 1rem;
+    color: var(--slate-700);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(79, 70, 229, 0.4);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    background: var(--slate-100);
+    color: var(--slate-700);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid var(--slate-200);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .btn-secondary:hover {
+    background: var(--slate-200);
+    border-color: var(--slate-300);
+    box-shadow: var(--shadow-md);
+  }
+
+  .fulltext-container {
+    background: linear-gradient(135deg, var(--slate-50) 0%, #f1f5f9 100%);
+    border: 1px solid var(--slate-200);
+    border-radius: 12px;
+    padding: 1.5rem;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--slate-700);
+    max-height: 600px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  .fulltext-container::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .fulltext-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .fulltext-container::-webkit-scrollbar-thumb {
+    background: var(--slate-300);
+    border-radius: 4px;
+  }
+
+  .fulltext-container::-webkit-scrollbar-thumb:hover {
+    background: var(--slate-400);
+  }
+
+  .max-w-7xl {
+    background: transparent;
+  }
+
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .grid.grid-cols-1 {
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 1024px) {
+    .grid.lg\:grid-cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .grid.lg\:grid-cols-3 .lg\:col-span-2 {
+      grid-column: span 2;
+    }
+  }
+</style>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <!-- Header / Title -->
+  <div class="flex items-start justify-between gap-6 mb-10">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 tracking-tight text-balance">{{ title or "Untitled Document" }}</h1>
+      <p class="mt-3 text-base text-slate-600">Ingested on: <span class="font-semibold text-slate-800">{{ ingestion_date or "—" }}</span></p>
+    </div>
+
+    <div class="flex items-center gap-3 flex-shrink-0">
+      <a href="{{ url_for('dashboard') }}" class="btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0L2.586 11a1 1 0 010-1.414l3.707-3.293a1 1 0 011.414 1.414L5.414 10l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+        Back
+      </a>
+
+      <button id="btnVisualize" class="btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h3a1 1 0 110 2H4v3a1 1 0 11-2 0v-3zM7 3a1 1 0 011-1h3a1 1 0 110 2H9v3a1 1 0 11-2 0V3zM13 9a1 1 0 011-1h3a1 1 0 110 2h-3v3a1 1 0 11-2 0V9z"/></svg>
+        Visualize
+      </button>
+    </div>
+  </div>
+
+  <!-- Top summary cards -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+    <!-- Applied premium card styling with enhanced shadows and padding -->
+    <div class="card-premium card-accent">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4">Abstract</h3>
+      <div class="card-content">
+        <p class="text-slate-700 text-base leading-relaxed font-medium">{{ abstract or "—" }}</p>
+      </div>
+    </div>
+
+    <div class="col-span-1 lg:col-span-2 card-premium card-cyan">
+      <div class="flex items-start justify-between gap-4 mb-4">
+        <div class="flex-1 min-w-0">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Summary</h3>
+          <div class="card-content">
+            <p id="summary-text" class="text-slate-700 text-base leading-relaxed whitespace-normal">{{ summary or "—" }}</p>
+          </div>
+        </div>
+        <div class="flex flex-col items-end gap-3 flex-shrink-0">
+          <button id="copy-summary" class="btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 011 1v1h2V4a3 3 0 00-3-3H9a3 3 0 00-3 3v1H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 000-2h-1V4z"/></svg>
+            Copy
+          </button>
+          <span class="text-xs font-medium text-slate-400">{{ (summary|length) if summary else 0 }} characters</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keywords + Entities cards -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+    <!-- Enhanced with premium gradient keyword tags and entity badges -->
+    <div class="card-premium card-emerald">
+      <div class="flex items-center justify-between mb-6">
+        <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-600">Keywords</h4>
+        <span class="inline-flex items-center px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold">{{ (keywords|length) if keywords else 0 }}</span>
+      </div>
+
+      {% if keywords and keywords|length > 0 %}
+        <div class="flex flex-wrap gap-2">
+          {% for k in keywords %}
+            <span class="tag-pill">{{ k }}</span>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-sm text-slate-400">No keywords extracted.</p>
+      {% endif %}
+    </div>
+
+    <div class="lg:col-span-2 card-premium">
+      <div class="flex items-center justify-between mb-6">
+        <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-600">Named Entities</h4>
+        <div class="flex items-center gap-4">
+          <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">{{ (entities|length) if entities else 0 }} found</span>
+          <button id="btnExportEntities" class="btn-secondary">Export CSV</button>
+        </div>
+      </div>
+
+      {% if entities and entities|length > 0 %}
+        <div class="overflow-x-auto border border-slate-100 rounded-xl">
+          <table class="table-premium">
+            <thead>
+              <tr>
+                <th>Text</th>
+                <th>Label</th>
+                <th>Start</th>
+                <th>End</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for e in entities %}
+                {% if e is string %}
+                  <tr>
+                    <td class="text-slate-700 font-medium" colspan="4">{{ e }}</td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td class="text-slate-700 font-medium">{{ e.get('text') or e.get('entity') or '—' }}</td>
+                    <td><span class="entity-badge">{{ e.get('label') or e.get('type') or '—' }}</span></td>
+                    <td class="text-slate-600 font-medium text-sm">{{ e.get('start') if e.get('start') is not none else '—' }}</td>
+                    <td class="text-slate-600 font-medium text-sm">{{ e.get('end') if e.get('end') is not none else '—' }}</td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-sm text-slate-400">No entities extracted.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Full text preview -->
+  <div class="card-premium mb-10">
+    <div class="flex items-center justify-between mb-6">
+      <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-600">Full Text Preview</h4>
+      <div class="flex items-center gap-3">
+        <button id="toggle-fulltext" class="btn-secondary">Toggle</button>
+        <button id="btnDownloadText" class="btn-secondary">Download</button>
+      </div>
+    </div>
+
+    <pre id="fulltext" class="fulltext-container hidden">{{ full_text or "—" }}</pre>
+    <p class="text-xs text-slate-500 mt-4">Note: Preview may be truncated for very large texts.</p>
+  </div>
+
+</div>
+
+<!-- Visualization modal -->
+<div id="vizModal" class="fixed inset-0 z-50 hidden items-start justify-center overflow-auto bg-black/50 p-6 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl w-full max-w-7xl mt-8 mb-8 ring-1 ring-slate-200 shadow-2xl">
+    <div class="flex items-center justify-between p-6 border-b border-slate-100">
+      <div>
+        <h3 class="text-xl font-bold text-slate-900">Document Visualizations</h3>
+        <p id="vizKeywords" class="text-sm text-slate-500 mt-2"></p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="vizNotes" class="text-sm text-slate-600"></div>
+        <button id="vizClose" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 border border-slate-200 hover:bg-slate-200 transition-colors font-medium">Close</button>
+      </div>
+    </div>
+
+    <div id="vizContainer" class="p-8 space-y-6 max-h-[70vh] overflow-auto">
+      <div id="vizLoading" class="text-center text-sm text-slate-500 py-16">Loading visualizations…</div>
+    </div>
+  </div>
+</div>
+
+<!-- Plotly CDN (load only if needed) -->
+<script>
+  async function ensurePlotly(){
+    if(window.Plotly) return;
+    return new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.plot.ly/plotly-2.29.1.min.js';
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error('Plotly failed to load'));
+      document.head.appendChild(s);
+    });
+  }
+</script>
+
+<script>
+  // Enhanced UI behaviors
+  document.getElementById('copy-summary')?.addEventListener('click', async () => {
+    try {
+      const text = document.getElementById('summary-text')?.innerText || '';
+      await navigator.clipboard.writeText(text);
+      const t = document.createElement('div');
+      t.textContent = 'Summary copied to clipboard';
+      t.className = 'fixed bottom-6 right-6 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium';
+      document.body.appendChild(t);
+      setTimeout(()=> t.remove(), 2500);
+    } catch(e){
+      console.error(e);
+      alert('Copy failed');
+    }
+  });
+
+  document.getElementById('toggle-fulltext')?.addEventListener('click', () => {
+    const el = document.getElementById('fulltext');
+    el.classList.toggle('hidden');
+  });
+
+  // Export entities: simple CSV export
+  document.getElementById('btnExportEntities')?.addEventListener('click', () => {
+    try{
+      const ents = {{ entities|tojson }} || [];
+      const rows = [];
+      if(Array.isArray(ents)){
+        for(const e of ents){
+          if(typeof e === 'string') rows.push([e, '', '', '']);
+          else rows.push([e.text || e.entity || '', e.label || e.type || '', e.start ?? '', e.end ?? '']);
+        }
+      }
+      const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = ("entities_" + ({{ doc_id|tojson }} || 'doc') + ".csv");
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }catch(err){ console.error(err); alert('Export failed'); }
+  });
+
+  // Visualization behavior
+  (function(){
+    const btnVisualize = document.getElementById('btnVisualize');
+    const vizModal = document.getElementById('vizModal');
+    const vizClose = document.getElementById('vizClose');
+    const vizContainer = document.getElementById('vizContainer');
+    const vizLoading = document.getElementById('vizLoading');
+    const vizKeywords = document.getElementById('vizKeywords');
+    const vizNotes = document.getElementById('vizNotes');
+
+    const docId = {{ doc_id|tojson }};
+
+    function showModal(){ vizModal.classList.remove('hidden'); vizModal.classList.add('flex'); document.body.style.overflow = 'hidden'; }
+    function hideModal(){ vizModal.classList.add('hidden'); vizModal.classList.remove('flex'); vizContainer.innerHTML = '<div id="vizLoading" class="text-center text-sm text-slate-500 py-16">Loading visualizations…</div>'; vizNotes.textContent = ''; document.body.style.overflow = ''; }
+
+    vizClose.addEventListener('click', hideModal);
+    vizModal.addEventListener('click', (e) => { if(e.target === vizModal) hideModal(); });
+
+    async function fetchAndRender() {
+      if(!docId) return showToast('No doc id available for visualization.');
+
+      vizContainer.innerHTML = '';
+      vizLoading.style.display = 'block';
+      vizContainer.appendChild(vizLoading);
+
+      try {
+        const resp = await fetch(`/visualize/${encodeURIComponent(docId)}`, { credentials: 'same-origin', headers: {'Accept':'application/json'} });
+        if(!resp.ok){
+          const txt = await resp.text();
+          vizContainer.innerHTML = `<div class="text-sm text-red-600">Visualization fetch failed: ${resp.status}</div><pre class="text-xs text-slate-500 p-4 bg-slate-50 rounded-lg">${txt.slice(0,800)}</pre>`;
+          return;
+        }
+        const data = await resp.json();
+        if(data.status !== 'ok'){
+          vizContainer.innerHTML = `<div class="text-sm text-red-600">Server: ${data.message || 'Visualization returned no data'}</div>`;
+          return;
+        }
+
+        await ensurePlotly().catch(()=>{});
+
+        vizContainer.innerHTML = '';
+
+        if(data.keywords && data.keywords.length){
+          vizKeywords.innerHTML = "<strong>Keywords:</strong> " + data.keywords.slice(0,10).join(', ');
+        } else { vizKeywords.innerHTML = ""; }
+
+        const notesArr = [];
+        const figs = data.figs || {};
+        if(Object.keys(figs).length === 0){
+          vizContainer.innerHTML = '<div class="text-sm text-slate-500 p-6 bg-slate-50 rounded-lg">No visualizations available for this document.</div>';
+        } else {
+          for(const [name, figStr] of Object.entries(figs)){
+            const wrap = document.createElement('div');
+            wrap.className = 'rounded-xl border border-slate-100 p-6 bg-slate-50 shadow-sm';
+
+            const title = document.createElement('div');
+            title.className = 'text-sm font-bold text-slate-900 mb-4 uppercase tracking-wide';
+            title.textContent = name.replace(/_/g,' ');
+            wrap.appendChild(title);
+
+            const mount = document.createElement('div');
+            const mountId = 'plot_' + Math.random().toString(36).slice(2,9);
+            mount.id = mountId;
+            mount.style = 'width:100%;height:420px;';
+            wrap.appendChild(mount);
+
+            vizContainer.appendChild(wrap);
+
+            let fig;
+            try { fig = JSON.parse(figStr); } catch(e){ fig = figStr; }
+            try {
+              if(window.Plotly && (fig.data || Array.isArray(fig))) {
+                Plotly.newPlot(mountId, fig.data || fig, fig.layout || {}, {responsive: true});
+              } else {
+                wrap.appendChild(Object.assign(document.createElement('pre'), {textContent: 'Plotly not available for rendering.'}));
+              }
+            } catch(err){
+              console.error('Plotly render error', err);
+              wrap.appendChild(Object.assign(document.createElement('pre'), {textContent: 'Plotly render failed: ' + err.message}));
+            }
+
+            if(data.notes && data.notes[name]) notesArr.push(data.notes[name]);
+          }
+        }
+
+        vizNotes.textContent = notesArr.join(' • ');
+      } catch(err){
+        console.error(err);
+        vizContainer.innerHTML = `<div class="text-sm text-red-600">Error rendering visualizations: ${err.message}</div>`;
+      }
+    }
+
+    btnVisualize?.addEventListener('click', async (e) => {
+      showModal();
+      await fetchAndRender();
+    });
+
+    function showToast(msg){
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.className = 'fixed bottom-6 right-6 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium';
+      document.body.appendChild(t);
+      setTimeout(()=> t.remove(), 2500);
+    }
+
+  })();
+</script>
+
+{% endblock %}

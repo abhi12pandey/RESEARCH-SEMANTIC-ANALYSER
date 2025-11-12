@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 py-12">
+  <div class="w-full max-w-lg p-8 space-y-6 bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl border border-white/30">
+    <!-- Branding -->
+    <div class="text-center">
+      <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Research Navigator</h1>
+      <p class="text-sm text-gray-500 mt-1">Semantic Analyzer — Create your account</p>
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="space-y-2">
+          {% for category, message in messages %}
+            <div role="alert" class="p-3 text-sm rounded {{ 'bg-red-50 text-red-700 border border-red-100' if category=='error' else 'bg-green-50 text-green-800 border border-green-100' }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Form container -->
+    <div class="grid gap-4">
+      <!-- Social signup (missing button added) -->
+      <div>
+        <form method="POST" action="/oauth/google" class="w-full">
+          <button type="submit" class="w-full flex items-center justify-center gap-3 px-4 py-2 rounded-lg border border-gray-200 hover:shadow-md transition bg-white">
+            <!-- Google Icon -->
+            <svg class="w-5 h-5" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <path d="M44 20H24v8h11.6C34.6 31.9 30 36 24 36 15.7 36 9 29.3 9 21S15.7 6 24 6c4.1 0 7.8 1.6 10.6 4.2l6-6C36.4 2 30.5 0 24 0 10.7 0 0 10.7 0 24s10.7 24 24 24c13.3 0 24-10.7 24-24 0-1.6-.1-3.2-.2-4.8z" fill="#FFC107"/>
+            </svg>
+            <span class="text-sm font-medium text-gray-700">Sign up with Google</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Divider -->
+      <div class="flex items-center gap-3">
+        <div class="flex-1 h-px bg-gray-200"></div>
+        <div class="text-xs text-gray-400">or</div>
+        <div class="flex-1 h-px bg-gray-200"></div>
+      </div>
+
+      <!-- Signup form -->
+      <form method="POST" action="/signup" class="space-y-4" autocomplete="on" novalidate>
+        <!-- Full name -->
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input id="username" name="username" type="text" required aria-required="true"
+            placeholder="Your full name"
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400"
+          />
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input id="email" name="email" type="email" required aria-required="true"
+            placeholder="you@example.com"
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400"
+          />
+        </div>
+
+        <!-- Role -->
+        <div>
+          <label for="role" class="block text-sm font-medium text-gray-700 mb-1">I am a</label>
+          <select id="role" name="role" required
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+            <option value="">Select role</option>
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+          </select>
+        </div>
+
+        <!-- Password with toggle -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <div class="relative">
+            <input id="password" name="password" type="password" required aria-required="true" placeholder="Choose a strong password"
+              class="w-full px-4 py-2 border rounded-lg pr-28 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400" />
+            <button type="button" id="togglePwd" class="absolute right-2 top-2.5 text-sm px-3 py-1 rounded-md bg-gray-100 border border-gray-200 hover:bg-gray-200 transition">Show</button>
+          </div>
+
+          <!-- Password strength bar -->
+          <div class="mt-3">
+            <div class="w-full h-2 rounded bg-gray-100 overflow-hidden">
+              <div id="strengthFill" class="h-2 w-0 transition-all"></div>
+            </div>
+            <p id="strengthText" class="text-xs mt-2 text-gray-500">Password strength: weak</p>
+          </div>
+        </div>
+
+        <!-- Actions: Primary + Secondary -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button type="submit" class="w-full py-2 px-4 rounded-lg text-white font-semibold bg-gradient-to-r from-indigo-600 to-emerald-500 shadow-md hover:from-indigo-700 hover:to-emerald-600 transition">
+            Create account
+          </button>
+
+          <!-- Secondary: Cancel or Back -->
+          <a href="/" class="w-full inline-flex items-center justify-center py-2 px-4 rounded-lg border border-gray-200 text-sm text-gray-700 bg-white hover:shadow-sm transition">
+            Back to Home
+          </a>
+        </div>
+      </form>
+
+      <!-- Login link -->
+      <p class="text-center text-sm text-gray-500">
+        Already have an account? <a href="/login" class="text-indigo-600 font-medium hover:underline">Login</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Script: password strength + toggle -->
+<script>
+(function(){
+  const passwordInput = document.getElementById('password');
+  const strengthFill = document.getElementById('strengthFill');
+  const strengthText = document.getElementById('strengthText');
+  const toggleBtn = document.getElementById('togglePwd');
+
+  function updateStrength(val){
+    let score = 0;
+    if (!val) score = 0;
+    if (val.length >= 8) score++;
+    if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++;
+    if (/\d/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    // map to width + simple color scale via inline styles (Tailwind classes are not dynamic here)
+    let width = '0%';
+    let bg = 'linear-gradient(to right, #ef4444, #f97316)'; // red->orange default
+    let text = 'Password strength: weak';
+    switch(score){
+      case 0:
+      case 1:
+        width = '20%'; bg = 'linear-gradient(to right, #ef4444, #f97316)'; text = 'Password strength: weak'; break;
+      case 2:
+        width = '50%'; bg = 'linear-gradient(to right, #f59e0b, #fbbf24)'; text = 'Password strength: fair'; break;
+      case 3:
+        width = '75%'; bg = 'linear-gradient(to right, #84cc16, #a3e635)'; text = 'Password strength: good'; break;
+      case 4:
+        width = '100%'; bg = 'linear-gradient(to right, #10b981, #059669)'; text = 'Password strength: strong'; break;
+    }
+    strengthFill.style.width = width;
+    strengthFill.style.background = bg;
+    strengthText.textContent = text;
+  }
+
+  passwordInput && passwordInput.addEventListener('input', (e) => updateStrength(e.target.value));
+
+  toggleBtn && toggleBtn.addEventListener('click', function(){
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleBtn.textContent = 'Hide';
+    } else {
+      passwordInput.type = 'password';
+      toggleBtn.textContent = 'Show';
+    }
+    passwordInput.focus();
+  });
+
+  // initialize low-profile style for strengthFill
+  if (strengthFill) {
+    strengthFill.style.height = '100%';
+    strengthFill.style.width = '0%';
+    strengthFill.style.borderRadius = '6px';
+  }
+})();
+</script>
+
+{% endblock %}

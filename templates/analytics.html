@@ -1,0 +1,483 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Analytics Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.29.1.min.js"></script>
+  <style>
+    :root{
+      --card-radius: 16px;
+      --primary: #3b82f6;
+      --primary-dark: #1e40af;
+      --secondary: #06b6d4;
+      --tertiary: #8b5cf6;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body{
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      min-height: 100vh;
+    }
+    
+    .header-container {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.7) 100%);
+      border-bottom: 2px solid rgba(79, 70, 229, 0.2);
+      padding: 28px 0;
+      backdrop-filter: blur(12px);
+    }
+    
+    .container { padding: 32px 24px; }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn-custom {
+      border-radius: 10px;
+      padding: 8px 16px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      background: linear-gradient(135deg, rgba(51, 65, 85, 0.4) 0%, rgba(30, 41, 59, 0.6) 100%);
+      color: #cbd5e1;
+      font-weight: 500;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+    
+    .btn-custom:hover {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.3) 0%, rgba(51, 65, 85, 0.5) 100%);
+      border-color: rgba(79, 70, 229, 0.5);
+      color: #f1f5f9;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+    
+    .kpi-card {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.7) 100%);
+      border: 2px solid;
+      border-image: linear-gradient(135deg, rgba(79, 70, 229, 0.4), rgba(6, 182, 212, 0.3)) 1;
+      border-radius: var(--card-radius);
+      padding: 28px;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+      border-radius: 50%;
+    }
+    
+    .kpi-card:hover {
+      border-color: rgba(79, 70, 229, 0.6);
+      background: linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 0.9) 100%);
+      box-shadow: 0 12px 40px rgba(79, 70, 229, 0.2), inset 0 1px 0 rgba(79, 70, 229, 0.1);
+      transform: translateY(-4px);
+    }
+    
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+    
+    .kpi-value {
+      font-weight: 800;
+      font-size: 32px;
+      background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
+    
+    .plot-card {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.7) 100%);
+      border: 1px solid rgba(79, 70, 229, 0.3);
+      border-radius: var(--card-radius);
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .plot-card:hover {
+      border-color: rgba(79, 70, 229, 0.6);
+      box-shadow: 0 16px 40px rgba(79, 70, 229, 0.2);
+      transform: translateY(-4px);
+    }
+    
+    .plot-title {
+      font-weight: 800;
+      background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+      font-size: 16px;
+      letter-spacing: -0.3px;
+    }
+    
+    .plot-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(79, 70, 229, 0.2);
+    }
+    
+    .palette-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 10px;
+      vertical-align: middle;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .plot-note {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    
+    .btn-group { display: flex; gap: 8px; }
+    .btn-group .btn { border-radius: 8px; padding: 6px 12px; font-size: 12px; }
+    
+    #analyticsPlots { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 28px; margin-top: 24px; }
+    
+    .table-responsive {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.7) 100%);
+      border: 1px solid rgba(79, 70, 229, 0.3);
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .table { margin: 0; color: #e2e8f0; }
+    .table thead th { 
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2) 0%, rgba(6, 182, 212, 0.1) 100%);
+      border-color: rgba(79, 70, 229, 0.2);
+      color: #cbd5e1;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 18px 16px;
+    }
+    .table tbody tr { border-color: rgba(79, 70, 229, 0.15); }
+    .table tbody tr:hover { background: rgba(79, 70, 229, 0.1); }
+    .table tbody td { color: #cbd5e1; padding: 16px; font-weight: 500; }
+    
+    hr { border-color: rgba(79, 70, 229, 0.2); margin: 40px 0; }
+    
+    .dropdown-menu {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(79, 70, 229, 0.3);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    
+    .dropdown-item {
+      color: #cbd5e1;
+      border-bottom: 1px solid rgba(79, 70, 229, 0.15);
+      transition: all 0.2s ease;
+    }
+    
+    .dropdown-item:hover {
+      background: rgba(79, 70, 229, 0.25);
+      color: #f1f5f9;
+    }
+    
+    .alert-info {
+      background: rgba(79, 70, 229, 0.15);
+      border: 1px solid rgba(79, 70, 229, 0.4);
+      color: #bfdbfe;
+      border-radius: 12px;
+      padding: 18px;
+      font-weight: 500;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 28px;
+      margin-top: 36px;
+      letter-spacing: -0.4px;
+    }
+    
+    @media (max-width: 768px) {
+      #analyticsPlots { grid-template-columns: 1fr; }
+      .page-title { font-size: 24px; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .btn-custom { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Enhanced header with better styling and spacing -->
+  <div class="header-container">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h2 class="page-title mb-0">Analytics Dashboard</h2>
+        <div class="controls">
+          <button id="btnToggleTheme" class="btn-custom">Toggle Dark Mode</button>
+          <div class="dropdown">
+            <button class="btn-custom dropdown-toggle" data-bs-toggle="dropdown">Color Palettes</button>
+            <ul class="dropdown-menu dropdown-menu-end" id="paletteMenu"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Enhanced KPI cards with better gradient backgrounds and spacing -->
+    <div class="row g-4 mb-6">
+      <div class="col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Documents</div>
+          <div class="kpi-value">{{ kpis.docs }}</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-label">Median Tokens</div>
+          <div class="kpi-value">{{ kpis.median_tokens }}</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Summary Length</div>
+          <div class="kpi-value">{{ kpis.avg_summary }}</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-label">Last Updated</div>
+          <div class="kpi-value" style="font-size: 20px;">{{ kpis.updated_at or '—' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Enhanced analytics plots section with better spacing -->
+    <h3 class="section-title">Performance Metrics</h3>
+    <div id="analyticsPlots"></div>
+
+    <hr>
+
+    <!-- Enhanced table section with better styling -->
+    <h3 class="section-title">Recent Documents</h3>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead>
+          <tr>{% for c in table_cols %}<th>{{ c }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for r in table_rows %}
+          <tr>
+            {% for c in table_cols %}
+              <td>{{ r[c] }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+const PALETTES = [
+  { name: 'Vercel Blue', colors: ['#3b82f6', '#0ea5e9', '#8b5cf6', '#ec4899', '#10b981'] },
+  { name: 'Stripe Modern', colors: ['#635bff', '#00d4ff', '#40e0d0', '#4f46e5', '#7c3aed'] },
+  { name: 'GitHub Dark', colors: ['#58a6ff', '#79c0ff', '#d29922', '#3fb950', '#f85149'] },
+  { name: 'Modern Analytics', colors: ['#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#10b981'] }
+];
+
+const figsMap = {{ figs_json|tojson }} || {};
+const container = document.getElementById('analyticsPlots');
+let activePaletteIndex = 0;
+let darkMode = true;
+
+function buildPaletteMenu(){
+  const menu = document.getElementById('paletteMenu');
+  menu.innerHTML = '';
+  PALETTES.forEach((p, idx) =>{
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.className = 'dropdown-item d-flex align-items-center';
+    a.href = '#';
+    a.onclick = (e)=>{ e.preventDefault(); activePaletteIndex = idx; renderAllPlots(); };
+    const dots = p.colors.map(c => `<span class="palette-dot" style="background:${c}"></span>`).join('');
+    a.innerHTML = `<div class="me-2" style="display:flex;gap:4px">${dots}</div><div>${p.name}</div>`;
+    li.appendChild(a); menu.appendChild(li);
+  });
+}
+
+function safeParse(figStr){
+  if(!figStr) return null;
+  if(typeof figStr === 'object') return figStr;
+  try{ return JSON.parse(figStr); }catch(e){
+    console.warn('fig parse failed', e);
+    return null;
+  }
+}
+
+function renderAllPlots(){
+  container.innerHTML = '';
+  const names = Object.keys(figsMap);
+  if(names.length === 0){
+    container.innerHTML = '<div class="col-12"><div class="alert alert-info">No visualizations available.</div></div>';
+    return;
+  }
+
+  names.forEach((key, idx) =>{
+    const figStr = figsMap[key];
+    const fig = safeParse(figStr);
+
+    const col = document.createElement('div');
+    col.className = 'col-12 col-lg-6';
+
+    const card = document.createElement('div');
+    card.className = 'plot-card';
+
+    const title = document.createElement('div');
+    title.className = 'plot-title';
+    title.textContent = key.replace(/_/g,' ').toUpperCase();
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'plot-toolbar';
+
+    const left = document.createElement('div');
+    left.className = 'd-flex align-items-center gap-2';
+    const palDot = document.createElement('div');
+    palDot.className = 'palette-dot';
+    palDot.style.background = PALETTES[activePaletteIndex].colors[0];
+    left.appendChild(palDot);
+    const note = document.createElement('small');
+    note.className = 'plot-note';
+    note.textContent = fig && fig.layout && fig.layout.title ? fig.layout.title.text || '' : '';
+    left.appendChild(note);
+
+    const right = document.createElement('div');
+    right.innerHTML = `
+      <div class="btn-group">
+        <button class="btn btn-sm btn-custom" data-action="download" style="padding: 6px 12px;">Download PNG</button>
+        <button class="btn btn-sm btn-custom" data-action="reset" style="padding: 6px 12px;">Reset Zoom</button>
+      </div>`;
+
+    toolbar.appendChild(left); toolbar.appendChild(right);
+
+    const plotDiv = document.createElement('div');
+    const plotId = 'plot_' + idx + '_' + Math.random().toString(36).slice(2,7);
+    plotDiv.id = plotId;
+    plotDiv.style = 'width:100%;height:420px;';
+
+    card.appendChild(title); card.appendChild(toolbar); card.appendChild(plotDiv);
+    col.appendChild(card);
+    container.appendChild(col);
+
+    if(!fig){
+      plotDiv.innerHTML = '<div style="color: #94a3b8; padding: 20px; text-align: center;">Invalid figure data</div>';
+      return;
+    }
+
+    const pal = PALETTES[activePaletteIndex].colors;
+    const layout = Object.assign({}, fig.layout || {});
+    layout.template = layout.template || {};
+    layout.paper_bgcolor = '#0f172a';
+    layout.plot_bgcolor = '#1e293b';
+    layout.font = { color: '#e2e8f0', family: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' };
+    layout.colorway = pal;
+    layout.margin = { l: 50, r: 20, t: 20, b: 50 };
+
+    const data = Array.isArray(fig.data) ? fig.data.map((t,i)=>{
+      const copy = Object.assign({}, t);
+      if(!copy.marker && !copy.line && !copy.fill){
+        const color = pal[i % pal.length];
+        if(['bar','histogram'].includes((copy.type||'').toLowerCase())) copy.marker = Object.assign({}, copy.marker || {}, {color});
+        else copy.line = Object.assign({}, copy.line || {}, {color, width: 2.5});
+      }
+      return copy;
+    }) : fig;
+
+    const config = {responsive:true,displaylogo:false,modeBarButtonsToAdd:[{
+      name:'Download as PNG',
+      icon:Plotly.Icons.camera, click:function(gd){ Plotly.toImage(gd,{format:'png',height:600, width:900}).then(function(url){ const a=document.createElement('a'); a.href=url; a.download=key.replace(/\s+/g,'_')+'.png'; a.click(); }); }
+    }]};
+
+    try{
+      Plotly.newPlot(plotId, data, layout, config).then(gd=>{
+        right.querySelector('[data-action="download"]').addEventListener('click', ()=>{
+          Plotly.toImage(gd,{format:'png',height:600,width:900}).then(url=>{ const a=document.createElement('a'); a.href=url; a.download=key.replace(/\s+/g,'_')+'.png'; a.click(); });
+        });
+        right.querySelector('[data-action="reset"]').addEventListener('click', ()=>{ Plotly.relayout(gd, { 'xaxis.autorange': true, 'yaxis.autorange': true }); });
+      });
+    }catch(err){
+      console.error('plotly render error', err);
+      plotDiv.innerHTML = '<div style="color: #ef4444; padding: 20px;">Plot render failed</div>';
+    }
+
+  });
+}
+
+buildPaletteMenu();
+renderAllPlots();
+
+document.getElementById('btnToggleTheme').addEventListener('click', ()=>{
+  darkMode = !darkMode;
+  document.body.style.background = darkMode 
+    ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)' 
+    : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%)';
+  document.body.style.color = darkMode ? '#e2e8f0' : '#0f172a';
+  renderAllPlots();
+});
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- HERO SECTION -->
+<!-- Enhanced hero with premium gradient background and animated elements -->
+<section class="relative min-h-screen flex items-center bg-gradient-to-br from-primary-light via-white to-neutral overflow-hidden pt-20 pb-12">
+  <!-- Premium animated background blobs with enhanced opacity -->
+  <div class="absolute top-32 -left-32 w-72 h-72 bg-primary opacity-8 rounded-full blur-3xl animate-pulse"></div>
+  <div class="absolute bottom-0 -right-32 w-96 h-96 bg-accent opacity-8 rounded-full blur-3xl animate-pulse delay-700"></div>
+
+  <div class="max-w-7xl mx-auto px-6 md:px-8 relative z-10 w-full">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <!-- Hero text -->
+      <div class="space-y-8">
+        <div>
+          <!-- Replaced Typed.js with stable CSS keyframe animation to prevent crashing -->
+          <h1 class="text-5xl md:text-6xl font-extrabold text-neutral-dark leading-tight mb-2 h-20 flex items-center">
+            <span class="typed-text"></span><span class="text-primary ml-2 animate-blink">|</span>
+          </h1>
+          <p class="text-lg text-gray-600 mt-6 leading-relaxed">
+            Simplify your research workflow with AI-powered semantic analysis. Upload papers, extract key concepts, and visualize insights instantly.
+          </p>
+        </div>
+
+        <!-- CTA Buttons -->
+        <!-- Enhanced buttons with gradient and glow effects -->
+        <div class="flex flex-wrap gap-4 pt-4">
+          <a href="/signup" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold shadow-glow-cyan hover:shadow-xl hover:shadow-cyan-500/50 transform hover:scale-105 transition-all duration-300">
+            🚀 Get Started Free
+          </a>
+          <a href="/upload" class="inline-flex items-center gap-2 px-8 py-4 border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary-light hover:shadow-md-soft transition-all duration-300">
+            📄 Upload Document
+          </a>
+        </div>
+
+        <!-- Trust indicators -->
+        <div class="pt-6 border-t border-neutral-light">
+          <p class="text-xs text-gray-500 font-semibold mb-4">Trusted by researchers and students</p>
+          <div class="flex items-center gap-4">
+            <div class="flex -space-x-2">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center text-xs font-bold shadow-md-soft">1</div>
+              <div class="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold shadow-md-soft">2</div>
+              <div class="w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center text-xs font-bold shadow-md-soft">3</div>
+            </div>
+            <span class="text-sm text-gray-600">2,500+ active users</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero illustration -->
+      <div class="hidden md:flex justify-center items-center">
+        <div class="relative w-full aspect-square max-w-2xl">
+          <!-- Enhanced glow effect around illustration -->
+          <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/30 via-blue-500/20 to-transparent opacity-60 rounded-3xl blur-3xl"></div>
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Gemini_Generated_Image_vm83b5vm83b5vm83-IPxwmOsjau4s30m3Kn2XydR1oqsq27.png" alt="AI Research Assistant" class="w-full h-full object-cover p-4 relative rounded-2xl">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE GRID -->
+<section class="py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-6 md:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-neutral-dark mb-4">Core Capabilities</h2>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">Everything you need to streamline your research and extract actionable insights</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Enhanced cards with colored borders and improved hover effects -->
+      <div class="group bg-white rounded-2xl p-8 shadow-md-soft hover:shadow-lg-soft transition-all duration-300 border-2 border-primary/30 hover:border-primary hover:-translate-y-1">
+        <div class="w-14 h-14 bg-primary-light rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary group-hover:text-white transition-all">
+          📚
+        </div>
+        <h3 class="text-xl font-bold text-neutral-dark mb-3">Document Understanding</h3>
+        <p class="text-gray-600">Quickly process research PDFs and DOCX files, extracting summaries, highlights, and key data automatically.</p>
+      </div>
+
+      <div class="group bg-white rounded-2xl p-8 shadow-md-soft hover:shadow-lg-soft transition-all duration-300 border-2 border-accent/30 hover:border-accent hover:-translate-y-1">
+        <div class="w-14 h-14 bg-accent/20 rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:bg-accent group-hover:text-white transition-all">
+          🧠
+        </div>
+        <h3 class="text-xl font-bold text-neutral-dark mb-3">Semantic Analysis</h3>
+        <p class="text-gray-600">Identify key entities, relationships, and concepts to help you navigate complex topics effortlessly.</p>
+      </div>
+
+      <div class="group bg-white rounded-2xl p-8 shadow-md-soft hover:shadow-lg-soft transition-all duration-300 border-2 border-emerald-300/50 hover:border-emerald-500 hover:-translate-y-1">
+        <div class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+          ⚡
+        </div>
+        <h3 class="text-xl font-bold text-neutral-dark mb-3">Fast & Secure Access</h3>
+        <p class="text-gray-600">Bank-level encryption and secure authentication for a smooth, protected research experience.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEMANTIC ANALYSIS GRAPH DEMO -->
+<section class="py-24 bg-gradient-to-b from-primary-light to-white relative overflow-hidden">
+  <!-- Enhanced background with premium gradient -->
+  <div class="absolute top-0 right-0 w-96 h-96 bg-primary opacity-5 rounded-full blur-3xl -z-0"></div>
+  <div class="max-w-5xl mx-auto px-6 md:px-8 relative z-10">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-neutral-dark mb-4">Semantic Intelligence in Action</h2>
+      <p class="text-xl text-gray-700">An exponential curve showing how relevance grows exponentially as documents are analyzed more deeply.</p>
+    </div>
+    <!-- Chart container with enhanced styling and border -->
+    <div class="bg-white rounded-2xl p-8 shadow-lg-soft border border-neutral-light/50">
+      <canvas id="semanticChart" class="max-w-full"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-6 md:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-neutral-dark mb-4">How It Works</h2>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">Three simple steps to unlock powerful research insights</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      <div class="relative">
+        <div class="flex items-start gap-6">
+          <div class="flex-shrink-0">
+            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent text-white font-bold text-lg shadow-md-soft">1</div>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-neutral-dark mb-3">Upload Your Document</h3>
+            <p class="text-gray-600">Drag and drop your research paper in PDF or DOCX format. We support documents up to 50MB.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative">
+        <div class="flex items-start gap-6">
+          <div class="flex-shrink-0">
+            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-secondary to-blue-400 text-white font-bold text-lg shadow-md-soft">2</div>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-neutral-dark mb-3">AI Analysis</h3>
+            <p class="text-gray-600">Our semantic engine analyzes content, extracts keywords, identifies relationships, and creates summaries.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative">
+        <div class="flex items-start gap-6">
+          <div class="flex-shrink-0">
+            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 text-white font-bold text-lg shadow-md-soft">3</div>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-neutral-dark mb-3">Explore Insights</h3>
+            <p class="text-gray-600">Visualize relationships, browse summaries, and export data for deeper analysis.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS SECTION -->
+<section class="py-24 bg-gradient-to-br from-neutral-dark via-dark-bg to-neutral-dark">
+  <div class="max-w-7xl mx-auto px-6 md:px-8">
+    <!-- Stats section with enhanced gradient text for accent colors -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="text-center">
+        <div class="text-5xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">2.5K+</div>
+        <p class="text-gray-300 text-lg">Active Users</p>
+      </div>
+      <div class="text-center">
+        <div class="text-5xl font-extrabold bg-gradient-to-r from-secondary to-blue-400 bg-clip-text text-transparent mb-2">1M+</div>
+        <p class="text-gray-300 text-lg">Documents Analyzed</p>
+      </div>
+      <div class="text-center">
+        <div class="text-5xl font-extrabold text-accent-light mb-2">99.9%</div>
+        <p class="text-gray-300 text-lg">Uptime</p>
+      </div>
+      <div class="text-center">
+        <div class="text-5xl font-extrabold text-emerald-400 mb-2">4.9★</div>
+        <p class="text-gray-300 text-lg">User Rating</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section class="py-24 bg-gradient-to-r from-primary via-primary-dark to-accent text-white relative overflow-hidden">
+  <!-- Enhanced CTA background with premium effects -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+  </div>
+  <div class="max-w-4xl mx-auto px-6 md:px-8 relative z-10 text-center">
+    <h2 class="text-4xl md:text-5xl font-extrabold mb-6">Ready to Transform Your Research?</h2>
+    <p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">Join thousands of researchers and students who are already using semantic intelligence to work smarter, not harder.</p>
+    <!-- CTA buttons with enhanced styling and effects -->
+    <div class="flex flex-wrap gap-4 justify-center">
+      <a href="/signup" class="inline-flex items-center gap-2 px-10 py-4 bg-white text-primary rounded-lg font-bold shadow-lg-soft hover:shadow-xl-soft transform hover:scale-105 transition-all duration-300">
+        🚀 Get Started Free
+      </a>
+      <a href="#" class="inline-flex items-center gap-2 px-10 py-4 border-2 border-white text-white rounded-lg font-bold hover:bg-white hover:text-primary transition-all duration-300">
+        📞 Request Demo
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- JS: Chart Only -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Added Typed.js library for smooth text animation -->
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var typed = new Typed('.typed-text', {
+      strings: ['Research Navigator', 'Semantic Analyzer', 'Academic Explorer'],
+      typeSpeed: 90,
+      backSpeed: 70,
+      backDelay: 4500,
+      startDelay: 500,
+      loop: true,
+      cursorChar: '',
+      attr: null,
+      bindInputFocusEvents: false,
+    });
+  });
+
+  const ctx = document.getElementById('semanticChart')?.getContext('2d');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Array.from({length: 21}, (_, i) => i - 10),
+        datasets: [{
+          label: 'Semantic Relevance Growth (e^x)',
+          data: Array.from({length: 21}, (_, i) => Math.exp((i - 10) / 5)),
+          borderColor: '#0A66C2',
+          backgroundColor: 'rgba(6, 182, 212, 0.15)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 5,
+          pointBackgroundColor: '#0A66C2',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            display: true,
+            labels: {
+              font: { size: 14, weight: 'bold' },
+              color: '#1E293B',
+              padding: 20,
+            }
+          },
+        },
+        scales: {
+          x: {
+            grid: { display: true, color: 'rgba(0,0,0,0.05)', drawBorder: false },
+            ticks: { font: { size: 12 }, color: '#64748B' },
+            title: { display: true, text: "Analysis Depth", font: { size: 14, weight: 'bold' }, color: '#1E293B' }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { display: true, color: 'rgba(0,0,0,0.05)', drawBorder: false },
+            ticks: { font: { size: 12 }, color: '#64748B' },
+            title: { display: true, text: "Relevance Score", font: { size: 14, weight: 'bold' }, color: '#1E293B' }
+          }
+        }
+      }
+    });
+  }
+</script>
+
+<!-- CSS Animations -->
+<style>
+  /* Smoother, slower blink animation for professional feel */
+  .animate-blink { 
+    animation: blink 2s step-start infinite; 
+  }
+  
+  @keyframes blink { 
+    50% { opacity: 0; } 
+  }
+  
+  .delay-700 { animation-delay: 0.7s; }
+  .opacity-8 { opacity: 0.08; }
+</style>
+
+{% endblock %}

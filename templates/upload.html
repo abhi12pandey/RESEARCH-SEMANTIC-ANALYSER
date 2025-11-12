@@ -1,0 +1,539 @@
+{% extends "base.html" %}
+{% block title %}Upload & Inspect — Research Navigator{% endblock %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800 py-12 px-4 relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-2 relative z-10">
+
+    <div class="mb-8 flex items-center justify-between">
+      <div>
+        <!-- <h1 class="text-4xl font-bold bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent mb-2">Document Ingestion</h1> -->
+        <!-- <p class="text-slate-400 text-sm">Drag or select documents to begin semantic analysis</p> -->
+      </div>
+      <div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700 text-sm text-slate-300">
+        Logged as <span class="font-semibold text-cyan-400">{{ username or 'Guest' }}</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <div class="lg:col-span-1">
+        <div class="h-full bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl border border-slate-700 p-8 backdrop-blur-sm hover:border-cyan-500/50 transition-all duration-300">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+            </div>
+            <h3 class="font-bold text-lg text-white"> Document Ingestion</h3>
+          </div>
+
+          <div id="drop-area" class="relative border-2 border-dashed border-slate-600 rounded-xl p-6 text-center transition-all duration-300 bg-slate-800/30 hover:bg-slate-700/30 hover:border-cyan-400">
+            <input id="fileElem" type="file" accept=".pdf,.docx,.csv,.xls,.xlsx" class="hidden" />
+            <div class="mb-4 flex justify-center">
+              <div class="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center border border-cyan-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-cyan-400 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                </svg>
+              </div>
+            </div>
+            <button id="fileSelect" class="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-indigo-600 text-white font-semibold shadow-lg hover:shadow-xl hover:from-cyan-600 hover:to-indigo-700 transition-all duration-300 mb-3">
+              Choose or Drop File
+            </button>
+            <p id="dropHelp" class="text-xs text-slate-400 mb-2">Supported formats: <span class="font-mono text-cyan-400">PDF</span>, <span class="font-mono text-cyan-400">DOCX</span>, <span class="font-mono text-cyan-400">CSV/XLSX</span></p>
+            <p id="dropError" class="text-xs text-red-400 mt-2 hidden font-medium"></p>
+          </div>
+
+          <div id="progressContainer" class="mt-6 hidden">
+            <div class="flex justify-between text-xs text-slate-400 mb-2">
+              <span class="font-medium">Uploading...</span><span id="progressPct" class="text-cyan-400 font-semibold">0%</span>
+            </div>
+            <div class="w-full bg-slate-700/50 h-2 rounded-full overflow-hidden border border-slate-600">
+              <div id="progressBar" class="h-2 w-0 bg-gradient-to-r from-cyan-500 to-indigo-500 transition-all duration-300"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-2">
+        <div class="h-full bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl border border-slate-700 p-8 backdrop-blur-sm">
+          <div class="flex items-start justify-between gap-4 mb-6 pb-6 border-b border-slate-700">
+            <div>
+              <h3 id="titleText" class="text-2xl font-bold text-white mb-2">No document loaded</h3>
+              <div class="text-sm text-slate-400">
+                <span id="metaFilename" class="text-slate-300 font-medium"></span><span id="metaSep" class="mx-2 text-slate-600 hidden">•</span><span id="metaDate" class="text-slate-400"></span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <a id="btnDownload" class="hidden text-sm px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 hover:border-cyan-500 text-slate-300 hover:text-white transition-all duration-300 shadow-md">
+                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Download
+              </a>
+              <a id="btnOpen" class="hidden text-sm px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-indigo-600 text-white hover:from-cyan-600 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold">
+                Open Analysis
+              </a>
+            </div>
+          </div>
+
+          <div id="processingOverlay" class="absolute inset-0 z-40 flex items-center justify-center bg-slate-950/80 backdrop-blur-md rounded-2xl hidden">
+            <div id="processingBox" class="w-96 p-8 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl text-center border border-slate-700">
+              <div id="processingGear" class="mx-auto w-20 h-20 rounded-full flex items-center justify-center bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 border border-cyan-500/50 mb-6">
+                <svg class="w-12 h-12 text-cyan-400 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <circle cx="12" cy="12" r="9" stroke-width="1.5"></circle>
+                  <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" stroke="url(#grad1)"></path>
+                </svg>
+              </div>
+              <div id="processingMsg" class="text-lg text-white mb-4 font-semibold">Configuring Analysis</div>
+              <p class="text-sm text-slate-400 mb-6">Please wait a moment while we prepare your document...</p>
+              <div id="startAnalysisWrap" class="hidden">
+                <button id="startAnalysisBtn" class="w-full px-4 py-3 bg-gradient-to-r from-cyan-500 to-indigo-600 text-white rounded-lg shadow-lg hover:shadow-xl font-semibold transition-all duration-300">Start Analysis</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="workflowArea" class="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch hidden mb-8">
+            <div class="workflow-card p-5 rounded-xl border border-slate-700 bg-gradient-to-br from-slate-700/30 to-slate-800/30 text-center shadow-md hover:shadow-lg hover:border-cyan-500/50 transition-all duration-300 backdrop-blur-sm">
+              <div class="text-3xl mb-3">📥</div>
+              <div class="text-sm font-bold text-slate-200 mb-2">Ingest</div>
+              <div class="text-xs text-slate-500" id="wfIngestStatus">Pending</div>
+            </div>
+            <div class="workflow-card p-5 rounded-xl border border-slate-700 bg-gradient-to-br from-slate-700/30 to-slate-800/30 text-center shadow-md hover:shadow-lg hover:border-cyan-500/50 transition-all duration-300 backdrop-blur-sm">
+              <div class="text-3xl mb-3">🧠</div>
+              <div class="text-sm font-bold text-slate-200 mb-2">Analyze</div>
+              <div class="text-xs text-slate-500" id="wfAnalyzeStatus">Pending</div>
+            </div>
+            <div class="workflow-card p-5 rounded-xl border border-slate-700 bg-gradient-to-br from-slate-700/30 to-slate-800/30 text-center shadow-md hover:shadow-lg hover:border-cyan-500/50 transition-all duration-300 backdrop-blur-sm">
+              <div class="text-3xl mb-3">📝</div>
+              <div class="text-sm font-bold text-slate-200 mb-2">Summarize</div>
+              <div class="text-xs text-slate-500" id="wfSummarizeStatus">Pending</div>
+            </div>
+            <div class="workflow-card p-5 rounded-xl border border-slate-700 bg-gradient-to-br from-slate-700/30 to-slate-800/30 text-center shadow-md hover:shadow-lg hover:border-cyan-500/50 transition-all duration-300 backdrop-blur-sm">
+              <div class="text-3xl mb-3">✅</div>
+              <div class="text-sm font-bold text-slate-200 mb-2">Done</div>
+              <div class="text-xs text-slate-500" id="wfDoneStatus">Waiting</div>
+            </div>
+          </div>
+
+          <div id="resultsArea" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+            <div class="md:col-span-2 border border-slate-700 rounded-xl p-6 bg-gradient-to-br from-slate-700/20 to-slate-800/20 backdrop-blur-sm">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="font-bold text-white text-lg">Summary</h4>
+                <button id="copy-summary" class="text-xs px-3 py-2 rounded-lg bg-gradient-to-r from-cyan-600 to-indigo-600 text-white hover:shadow-lg transition-all duration-300 font-semibold">Copy</button>
+              </div>
+              <p id="textPreview" class="text-sm text-slate-300 whitespace-pre-wrap max-h-48 overflow-auto leading-relaxed"></p>
+              <button id="expandFull" class="mt-4 text-sm text-cyan-400 hover:text-cyan-300 hidden font-semibold">Show full text →</button>
+            </div>
+            <div class="border border-slate-700 rounded-xl p-6 bg-gradient-to-br from-slate-700/20 to-slate-800/20 backdrop-blur-sm">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="font-bold text-white">Entities</h4>
+                <div class="text-xs text-cyan-400 font-semibold bg-cyan-500/20 px-3 py-1 rounded-full" id="entityCount">0</div>
+              </div>
+              <input id="entityFilter" class="w-full text-sm mb-4 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-600 text-slate-200 placeholder-slate-500 focus:border-cyan-500 focus:outline-none transition-colors" placeholder="Filter entities..." />
+              <div id="entitiesOverview" class="space-y-2 max-h-48 overflow-auto"></div>
+            </div>
+          </div>
+
+          <div id="fullOutput" class="hidden border border-slate-700 rounded-xl p-6 bg-gradient-to-br from-slate-700/20 to-slate-800/20 backdrop-blur-sm mt-6">
+            <div class="flex items-center justify-between mb-5">
+              <h4 class="font-bold text-white text-lg">Full Document Analysis</h4>
+              <div class="text-xs text-slate-400 bg-slate-800/50 px-3 py-1 rounded-lg">Paragraphs: <span id="paraCount" class="text-cyan-400 font-semibold">0</span></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <h5 class="font-bold text-slate-200 mb-4">Paragraphs</h5>
+                <div id="paraList" class="space-y-3 max-h-96 overflow-auto"></div>
+              </div>
+              <div>
+                <h5 class="font-bold text-slate-200 mb-4">Entities Grouped by Label</h5>
+                <div id="entitiesGrouped" class="space-y-4 max-h-96 overflow-auto"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const fileSelect = document.getElementById('fileSelect');
+  const fileElem = document.getElementById('fileElem');
+  const dropArea = document.getElementById('drop-area');
+  const dropError = document.getElementById('dropError');
+  const dropHelp = document.getElementById('dropHelp');
+  const progressContainer = document.getElementById('progressContainer');
+  const progressBar = document.getElementById('progressBar');
+  const progressPct = document.getElementById('progressPct');
+
+  const titleText = document.getElementById('titleText');
+  const metaFilename = document.getElementById('metaFilename');
+  const metaDate = document.getElementById('metaDate');
+  const metaSep = document.getElementById('metaSep');
+  const btnDownload = document.getElementById('btnDownload');
+  const btnOpen = document.getElementById('btnOpen');
+
+  const processingOverlay = document.getElementById('processingOverlay');
+  const processingMsg = document.getElementById('processingMsg');
+  const startAnalysisWrap = document.getElementById('startAnalysisWrap');
+  const startAnalysisBtn = document.getElementById('startAnalysisBtn');
+
+  const workflowArea = document.getElementById('workflowArea');
+  const wfIngestStatus = document.getElementById('wfIngestStatus');
+  const wfAnalyzeStatus = document.getElementById('wfAnalyzeStatus');
+  const wfSummarizeStatus = document.getElementById('wfSummarizeStatus');
+  const wfDoneStatus = document.getElementById('wfDoneStatus');
+
+  const resultsArea = document.getElementById('resultsArea');
+  const textPreview = document.getElementById('textPreview');
+  const expandFull = document.getElementById('expandFull');
+
+  const entityCount = document.getElementById('entityCount');
+  const entityFilter = document.getElementById('entityFilter');
+  const entitiesOverview = document.getElementById('entitiesOverview');
+
+  const fullOutput = document.getElementById('fullOutput');
+  const paraCount = document.getElementById('paraCount');
+  const paraList = document.getElementById('paraList');
+  const entitiesGrouped = document.getElementById('entitiesGrouped');
+
+  const ALLOWED = ['pdf','docx','csv','xls','xlsx'];
+
+  let lastResponse = null;
+  let lastFile = null;
+
+  function setDropError(msg){
+    if(msg){
+      dropError.textContent = msg;
+      dropError.classList.remove('hidden');
+      dropArea.classList.add('border-red-500','bg-red-50');
+      dropHelp.classList.add('opacity-30');
+    } else {
+      dropError.classList.add('hidden');
+      dropError.textContent = '';
+      dropArea.classList.remove('border-red-500','bg-red-50');
+      dropHelp.classList.remove('opacity-30');
+    }
+  }
+
+  dropArea.addEventListener('dragover', (e)=> { e.preventDefault(); dropArea.classList.add('border-indigo-400'); });
+  dropArea.addEventListener('dragleave', ()=> { dropArea.classList.remove('border-indigo-400'); setDropError(''); });
+  dropArea.addEventListener('drop', (e)=> {
+    e.preventDefault();
+    dropArea.classList.remove('border-indigo-400');
+    setDropError('');
+    const files = e.dataTransfer.files;
+    if(!files || !files.length) return;
+    const f = files[0];
+    const ext = f.name.split('.').pop().toLowerCase();
+    if(!ALLOWED.includes(ext)){ setDropError('Unsupported file type — only PDF/DOCX/CSV/XLSX allowed.'); return; }
+    fileElem.files = files;
+    uploadFile(f);
+  });
+
+  fileSelect.addEventListener('click', ()=> fileElem.click());
+  fileElem.addEventListener('change', (e)=> {
+    const f = e.target.files[0];
+    if(!f) return;
+    const ext = f.name.split('.').pop().toLowerCase();
+    if(!ALLOWED.includes(ext)){ setDropError('Unsupported file type — only PDF/DOCX/CSV/XLSX allowed.'); return; }
+    setDropError('');
+    uploadFile(f);
+  });
+
+  function clearUI(){
+    titleText.textContent = 'No document loaded';
+    metaFilename.textContent = '';
+    metaDate.textContent = '';
+    metaSep.classList.add('hidden');
+    btnDownload.classList.add('hidden');
+    btnOpen.classList.add('hidden');
+    resultsArea.classList.add('hidden');
+    fullOutput.classList.add('hidden');
+    textPreview.textContent = '';
+    expandFull.classList.add('hidden');
+    entityCount.textContent = '0';
+    entitiesOverview.innerHTML = '';
+    paraList.innerHTML = '';
+    entitiesGrouped.innerHTML = '';
+    workflowArea.classList.add('hidden');
+    wfIngestStatus.textContent = 'Pending';
+    wfAnalyzeStatus.textContent = 'Pending';
+    wfSummarizeStatus.textContent = 'Pending';
+    wfDoneStatus.textContent = 'Waiting';
+    processingOverlay.classList.add('hidden');
+    startAnalysisWrap.classList.add('hidden');
+  }
+
+  function escapeHtml(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function normalizeEntities(raw){
+    const arr = Array.isArray(raw) ? raw : [];
+    return arr.map(e => {
+      if(typeof e === 'string') return { text: e, label: 'OTHER' };
+      return { text: e.text || e || '', label: e.label || 'OTHER' };
+    });
+  }
+
+  function renderFinalResults(res, file){
+    lastResponse = res;
+    lastFile = file;
+
+    const title = res.title || (file && file.name) || 'Uploaded document';
+    titleText.textContent = title;
+
+    const filename = res.filename || (res.file_path && res.file_path.split('/').pop()) || (file && file.name) || '';
+    const ingestion = res.ingestion_date || res.ingested_at || res.ingested_on || new Date().toISOString().slice(0,19).replace('T',' ');
+    if(filename){ metaFilename.textContent = filename; metaSep.classList.remove('hidden'); }
+    metaDate.textContent = ingestion;
+
+    if (filename){
+      btnDownload.href = `/static/uploads/${encodeURIComponent(filename)}`;
+      btnDownload.classList.remove('hidden');
+    }
+
+    if (res.redirect_url) {
+      btnOpen.href = res.redirect_url;
+      btnOpen.textContent = 'Open Analysis';
+      btnOpen.classList.remove('hidden');
+    } else if (res.doc_id) {
+      btnOpen.href = `/inspect/${encodeURIComponent(res.doc_id)}`;
+      btnOpen.textContent = 'Open Analysis';
+      btnOpen.classList.remove('hidden');
+    }
+
+    const preview = res.summary || res.abstractive_summary || res.extractive_summary || res.text_preview || (res.plain_text && res.plain_text.slice(0,1200)) || (res.abstract) || '';
+    textPreview.textContent = preview || 'No preview available.';
+    resultsArea.classList.remove('hidden');
+
+    const entities = normalizeEntities(res.entities);
+    entityCount.textContent = entities.length;
+    entitiesOverview.innerHTML = '';
+    entities.slice(0,12).forEach((ent, i) => {
+      const span = document.createElement('span');
+      span.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium mr-2 mb-2';
+      const palette = ['bg-amber-100 text-amber-800','bg-pink-100 text-pink-800','bg-sky-100 text-sky-800','bg-lime-100 text-lime-800','bg-violet-100 text-violet-800','bg-rose-100 text-rose-800'][i % 6];
+      span.classList.add(...palette.split(' '));
+      span.textContent = `${ent.text} (${ent.label})`;
+      entitiesOverview.appendChild(span);
+    });
+
+    const paragraphs = Array.isArray(res.full_text) ? res.full_text : (res.plain_text ? res.plain_text.split('\n\n') : []);
+    paraCount.textContent = paragraphs.length;
+    paraList.innerHTML = '';
+    if(paragraphs.length){
+      paragraphs.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = 'p-3 rounded border bg-white';
+        let text = (typeof p === 'string') ? p : (p.cleaned_text || p.raw_text || '');
+        const subtitle = (typeof p === 'object' && Array.isArray(p.sentences) && p.sentences.length) ? p.sentences[0] : (text.split('. ')[0] || '');
+        card.innerHTML = `<div class="text-xs text-slate-500 mb-1">Paragraph ${idx+1}</div>
+                          <div class="text-sm text-slate-800 font-medium mb-2">${escapeHtml(subtitle)}</div>
+                          <div class="text-sm text-slate-700 whitespace-pre-wrap">${escapeHtml(text)}</div>`;
+        paraList.appendChild(card);
+      });
+    } else {
+      paraList.innerHTML = '<div class="text-xs text-slate-400">No paragraph structure available.</div>';
+    }
+
+    const grouped = {};
+    entities.forEach(ent => {
+      const label = ent.label || 'OTHER';
+      if(!grouped[label]) grouped[label] = [];
+      grouped[label].push(ent.text);
+    });
+    entitiesGrouped.innerHTML = '';
+    Object.keys(grouped).sort().forEach((label) => {
+      const block = document.createElement('div');
+      block.className = 'p-2 border rounded';
+      const title = document.createElement('div');
+      title.className = 'flex items-center justify-between';
+      title.innerHTML = `<div class="text-sm font-medium">${escapeHtml(label)}</div><div class="text-xs text-slate-500">${grouped[label].length}</div>`;
+      block.appendChild(title);
+
+      const list = document.createElement('div');
+      list.className = 'mt-2 flex flex-wrap gap-2';
+      const uniq = Array.from(new Set(grouped[label])).slice(0,50);
+      uniq.forEach((text) => {
+        const badge = document.createElement('button');
+        badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded text-xs bg-slate-100 hover:bg-slate-200';
+        badge.textContent = text;
+        badge.onclick = ()=> {
+          entityFilter.value = text;
+          applyEntityFilter();
+          entitiesOverview.scrollIntoView({behavior:'smooth', block:'center'});
+        };
+        list.appendChild(badge);
+      });
+      block.appendChild(list);
+      entitiesGrouped.appendChild(block);
+    });
+
+    fullOutput.classList.remove('hidden');
+  }
+
+  function runWorkflowAndShowResults(res, file){
+    workflowArea.classList.remove('hidden');
+    wfIngestStatus.textContent = 'Running...';
+    wfAnalyzeStatus.textContent = 'Pending';
+    wfSummarizeStatus.textContent = 'Pending';
+    wfDoneStatus.textContent = 'Waiting';
+
+    const ingestTime = 900;
+    const analyzeTime = 1200;
+    const summarizeTime = 800;
+
+    setTimeout(()=> {
+      wfIngestStatus.textContent = 'Complete';
+      wfIngestStatus.classList.add('text-green-600','font-medium');
+      wfAnalyzeStatus.textContent = 'Running...';
+      setTimeout(()=> {
+        wfAnalyzeStatus.textContent = 'Complete';
+        wfAnalyzeStatus.classList.add('text-green-600','font-medium');
+        wfSummarizeStatus.textContent = 'Running...';
+        setTimeout(()=> {
+          wfSummarizeStatus.textContent = 'Complete';
+          wfSummarizeStatus.classList.add('text-green-600','font-medium');
+          wfDoneStatus.textContent = 'Done';
+          wfDoneStatus.classList.add('text-green-600','font-medium');
+
+          setTimeout(()=> {
+            processingOverlay.classList.add('hidden');
+            renderFinalResults(res, file);
+            document.querySelector('#resultsArea').scrollIntoView({behavior:'smooth'});
+          }, 600);
+        }, summarizeTime);
+      }, analyzeTime);
+    }, ingestTime);
+  }
+
+  function showProcessingThenStart(res, file){
+    lastResponse = res;
+    lastFile = file;
+
+    processingOverlay.classList.remove('hidden');
+    processingMsg.textContent = 'Configuring Analysis — please wait a moment';
+
+    startAnalysisWrap.classList.add('hidden');
+
+    setTimeout(()=> {
+      processingMsg.textContent = 'Ready — start analysis when you are ready';
+      startAnalysisWrap.classList.remove('hidden');
+    }, 1400);
+  }
+
+  function uploadFile(file){
+    clearUI();
+    progressContainer.classList.remove('hidden');
+    progressBar.style.width = '0%';
+    progressPct.textContent = '0%';
+
+    const fd = new FormData();
+    fd.append('document', file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/upload', true);
+
+    xhr.withCredentials = true;
+
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.setRequestHeader('Accept', 'application/json');
+
+    xhr.upload.onprogress = (e)=> {
+      if(e.lengthComputable){
+        const p = Math.round((e.loaded / e.total) * 100);
+        progressBar.style.width = p + '%';
+        progressPct.textContent = p + '%';
+      }
+    };
+
+    xhr.onload = ()=> {
+      progressBar.style.width = '100%';
+      progressPct.textContent = '100%';
+      let res = null;
+      try {
+        res = JSON.parse(xhr.responseText || '{}');
+      } catch(err){
+        const body = (xhr.responseText || '').slice(0,800);
+        setDropError('Invalid server response. Server returned non-JSON. Preview: ' + (body || 'empty'));
+        setTimeout(()=> { progressContainer.classList.add('hidden'); }, 600);
+        return;
+      }
+
+      if(xhr.status === 200 && res.status === 'success'){
+        showProcessingThenStart(res, file);
+      } else {
+        setDropError(res && res.message ? res.message : ('Upload failed (status ' + xhr.status + ')'));
+      }
+      setTimeout(()=> { progressContainer.classList.add('hidden'); }, 600);
+    };
+
+    xhr.onerror = ()=> {
+      setDropError('Network error during upload.');
+      progressContainer.classList.add('hidden');
+    };
+
+    xhr.send(fd);
+  }
+
+  function applyEntityFilter(){
+    const q = (entityFilter.value || '').toLowerCase().trim();
+    const children = entitiesOverview.children;
+    for(let i=0;i<children.length;i++){
+      const txt = (children[i].textContent || '').toLowerCase();
+      children[i].style.display = (!q || txt.includes(q)) ? 'inline-flex' : 'none';
+    }
+    Array.from(entitiesGrouped.querySelectorAll('button')).forEach(b => {
+      const t = (b.textContent || '').toLowerCase();
+      b.style.display = (!q || t.includes(q)) ? 'inline-flex' : 'none';
+    });
+  }
+  entityFilter.addEventListener('input', applyEntityFilter);
+
+  document.getElementById('copy-summary')?.addEventListener('click', async () => {
+    try {
+      const text = document.getElementById('textPreview')?.innerText || '';
+      await navigator.clipboard.writeText(text);
+      alert('Summary copied!');
+    } catch(e) {
+      console.error(e);
+      alert('Copy failed');
+    }
+  });
+
+  startAnalysisBtn && startAnalysisBtn.addEventListener('click', ()=> {
+    if(!lastResponse || !lastFile) return;
+    processingMsg.textContent = 'Running analysis...';
+    startAnalysisWrap.classList.add('hidden');
+    runWorkflowAndShowResults(lastResponse, lastFile);
+  });
+
+  document.getElementById('expandFull')?.addEventListener('click', () => {
+  });
+
+  clearUI();
+});
+</script>
+
+<style>
+  .animate-spin-slow { animation: spin 2.2s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  
+  button, a {
+    @apply transition-all duration-300;
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+  
+  .shadow-xl {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  }
+</style>
+
+{% endblock %}

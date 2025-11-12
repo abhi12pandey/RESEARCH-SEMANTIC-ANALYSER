@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Research Navigator{% endblock %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
+  <!-- Animated grid background -->
+  <div class="fixed inset-0 opacity-5 pointer-events-none"
+       style="background-image: linear-gradient(rgba(100, 200, 255, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(100, 200, 255, 0.3) 1px, transparent 1px); background-size: 50px 50px;"></div>
+
+  <div class="relative max-w-6xl mx-auto px-6 py-12 space-y-8">
+
+    <!-- Top User Row -->
+    <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+      <div class="flex items-center gap-4">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+          {{ (username or 'U')[:1] | upper }}
+        </div>
+        <div>
+          <h1 class="text-3xl font-bold text-white">{{ username or 'Researcher' }}</h1>
+          <!-- <p class="text-sm text-blue-200">{{ user_docs[0].user_email if user_docs else 'no-email@example.com' }}</p> -->
+        </div>
+      </div>
+
+      <div class="flex items-center gap-8">
+        <div class="text-right">
+          <div id="userDate" class="text-sm text-blue-300 font-medium"></div>
+          <div id="userTime" class="text-2xl font-bold text-white"></div>
+        </div>
+        <!-- <a href="/upload"
+           class="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300">
+          + Upload Document
+        </a> -->
+      </div>
+    </div>
+
+    <!-- Section Title -->
+    <div class="pt-4">
+      <h2 class="text-2xl font-bold text-white mb-2">Recent Documents</h2>
+      <div class="h-1 w-32 bg-gradient-to-r from-blue-500 to-cyan-400"></div>
+    </div>
+
+    {% if user_docs %}
+    <div class="grid grid-cols-1 gap-4">
+      {% for doc in user_docs %}
+      <!-- Document Card -->
+      <div class="document-card rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-blue-500/20 shadow-xl hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer overflow-hidden"
+           data-doc-id="{{ doc.doc_id }}">
+
+        <div class="p-6">
+          <!-- Card Header -->
+          <div class="flex justify-between items-start gap-6 mb-4">
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-white mb-1">{{ doc.title }}</h3>
+              <p class="text-sm text-blue-300">Document ID: {{ doc.doc_id }}</p>
+            </div>
+            <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-500/20 text-blue-400 transition-transform duration-300 expand-icon">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Abstract -->
+          <p class="text-sm text-gray-300 mb-4 leading-relaxed line-clamp-3">
+            {{ doc.abstract or "No summary available." }}
+          </p>
+
+          <!-- Entities Tags -->
+          {% if doc.entities %}
+          <div class="flex flex-wrap gap-2 mb-4">
+            {% for ent in doc.entities[:8] %}
+            <span class="px-3 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-300 border border-blue-500/30 hover:border-blue-400/60 transition-colors">
+              <span class="font-semibold">{{ ent.text }}</span>
+              <span class="text-blue-400 ml-1">({{ ent.label }})</span>
+            </span>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- View File Button -->
+          {% set fname = doc.file_path.split('/')[-1] if doc.file_path else None %}
+          {% if fname %}
+          <div class="flex justify-end">
+            <a href="{{ url_for('static', filename='uploads/' ~ fname) }}" target="_blank"
+               class="text-xs px-4 py-2 rounded-lg border border-blue-500/50 text-blue-300 hover:bg-blue-500/10 hover:border-blue-400/80 transition-all">
+              View File
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Expandable Details Section -->
+        <div class="details-section hidden">
+          <div class="border-t border-blue-500/20 bg-slate-900/50 p-6 space-y-6">
+            
+            <!-- Full Text Preview -->
+            {% if doc.full_text %}
+            <div>
+              <h4 class="text-lg font-bold text-white mb-3">Document Content</h4>
+              <div class="bg-slate-800/50 rounded-lg p-4 max-h-64 overflow-y-auto border border-blue-500/10">
+                <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{{ doc.full_text[:1000] }}{% if doc.full_text|length > 1000 %}...{% endif %}</p>
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Analysis Section -->
+            {% if doc.analysis %}
+            <div>
+              <h4 class="text-lg font-bold text-white mb-3">Analysis Results</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for key, value in doc.analysis.items() %}
+                <div class="bg-slate-800/50 rounded-lg p-4 border border-blue-500/10">
+                  <p class="text-xs font-semibold text-blue-400 uppercase tracking-wide">{{ key }}</p>
+                  <p class="text-sm text-gray-300 mt-2">{{ value }}</p>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Metadata -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4 border-t border-blue-500/20">
+              <div>
+                <p class="text-xs text-blue-400 font-semibold uppercase">Uploaded</p>
+                <p class="text-sm text-gray-300 mt-1">{{ doc.upload_date or 'Unknown' }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-blue-400 font-semibold uppercase">Status</p>
+                <p class="text-sm text-green-400 mt-1">✓ Analyzed</p>
+              </div>
+              <div>
+                <p class="text-xs text-blue-400 font-semibold uppercase">Entity Count</p>
+                <p class="text-sm text-gray-300 mt-1">{{ doc.entities|length if doc.entities else '0' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="py-24 text-center">
+      <div class="inline-block p-8 rounded-2xl bg-slate-800/50 border border-blue-500/20">
+        <svg class="w-16 h-16 text-blue-400 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg>
+        <p class="text-blue-300 mb-4">No documents uploaded yet</p>
+        <a href="/upload" class="inline-block px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+          Upload your first document →
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Update time
+  function updateTime(){
+    const now = new Date();
+    document.getElementById("userDate").textContent =
+      now.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", weekday: "short", month:"short", day:"numeric", year:"numeric" });
+    document.getElementById("userTime").textContent =
+      now.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour12: false });
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+
+  const cards = document.querySelectorAll('.document-card');
+  cards.forEach(card => {
+    card.addEventListener('click', function(e) {
+      // Don't expand if clicking on a link
+      if (e.target.closest('a')) return;
+      
+      const detailsSection = this.querySelector('.details-section');
+      const expandIcon = this.querySelector('.expand-icon');
+      const isHidden = detailsSection.classList.contains('hidden');
+      
+      if (isHidden) {
+        detailsSection.classList.remove('hidden');
+        expandIcon.style.transform = 'rotate(180deg)';
+      } else {
+        detailsSection.classList.add('hidden');
+        expandIcon.style.transform = 'rotate(0deg)';
+      }
+    });
+  });
+});
+</script>
+
+{% endblock %}
