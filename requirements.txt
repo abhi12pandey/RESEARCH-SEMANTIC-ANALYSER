@@ -1,0 +1,14 @@
+flask
+python-dotenv
+numpy
+pandas
+requests
+transformers
+torch
+sentencepiece
+scikit-learn
+nltk
+spacy
+beautifulsoup4
+tqdm
+pymupdf
