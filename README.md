@@ -1,7 +1,7 @@
 # RESEARCH-SEMANTIC-ANALYSER
 Developed an AI-powered research analysis tool that automatically extracts semantic insights, keywords, and trends from uploaded research papers.
-# RESEARCH SEMANTIC ANALYSER 🔍  
-*A lightweight tool for analysing, comparing and visualising semantic patterns inside research documents.*
+  
+                *A lightweight tool for analysing, comparing and visualising semantic patterns inside research documents.*
 
 ---
 
@@ -22,13 +22,13 @@ This tool is built for:
 - **Document Pre-processing** (cleaning, stopword removal, tokenisation)  
 - **Keyword Extraction**  
 - **Semantic Similarity Analysis**  
-- **Topic Modelling (LDA/NMF)**  
+  
 - **Word Frequency & WordCloud Generation**  
 - **Document-Wise Visual Reports**  
 - **Exportable Charts (PNG/CSV/JSON)**  
 
 ---
 
-## 📂 Project Structure
+
 
 
